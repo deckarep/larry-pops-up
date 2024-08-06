@@ -9,6 +9,10 @@ Made with ♥️ - Please enjoy!
 
 #
 
+# Like this project? Tip Al!
+If you enjoy this project or have ever enjoyed any of Al Lowe's work in the past, feel free to give him a tip (buy him a coffee) over at his original homepage. Al has stated that he does not earn royalties on his games and work at Sierra. Show him some gratitude if you can. [Click here to leave him a tip! to visit: allowe.com](https://allowe.com/more/tipjar.html)
+#
+
 Original version by: Don Munsil - [further details on Al Lowe's website](https://allowe.com/games/larry/even-more-larry/larry-links.html)
 
 
