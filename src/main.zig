@@ -4,10 +4,11 @@ const rl = @import("raylib");
 const SCREEN_WIDTH = 125;
 const SCREEN_HEIGHT = 125;
 
-const FPS = 30; // FPS, barely does anything, no need for anything
-const framesToPass = FPS * 2; // Seconds to wait based on fps, so the user can glance at picture on short clips.
+const FPS = 30; // FPS, barely does anything, no need to tax user's system.
+const framesToPass = FPS * 2; // Seconds to wait based on fps, so the user has a chance to see the image before it goes away.
 
 // pngs is a hardcoded, static table of all possible Larry images to show.
+// perhaps more will be added...why the hell not?
 const pngs: []const [:0]const u8 = &.{
     "LpopsUp1/POP1.png",
     "LpopsUp2/POP2.png",
@@ -135,7 +136,7 @@ var killApp = false;
 var pngTexture: rl.Texture = undefined;
 
 pub fn main() !void {
-    std.debug.print("Hello World!\n", .{});
+    std.log.info("Larry Pops Up! by @deckarep - 2024\n", .{});
     rl.initWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Larry Pops Up!");
     rl.setWindowMaxSize(SCREEN_WIDTH, SCREEN_HEIGHT);
     //rl.toggleBorderlessWindowed(); // - doesn't seem to work on macos.
