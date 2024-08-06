@@ -1,0 +1,49 @@
+name: Nightly Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 5 * * *' # run at 5 AM UTC
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: goto-bus-stop/setup-zig@v1
+        with:
+          version: master
+      - run: zig fmt --check src/**/*.zig
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+      - uses: goto-bus-stop/setup-zig@v1
+        with:
+          version: master
+      - run: zig build test
+
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - run: vcpkg install --recurse --x-install-root C:\vcpkg\installed --triplet x64-windows
+
+      # So Zig finds vcpkg
+      - run: vcpkg integrate install
+
+      - uses: goto-bus-stop/setup-zig@v1
+        with:
+          version: master
+
+      - run: zig build install
