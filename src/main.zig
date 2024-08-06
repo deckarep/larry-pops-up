@@ -3,13 +3,11 @@ const rl = @import("raylib");
 
 const SCREEN_WIDTH = 125;
 const SCREEN_HEIGHT = 125;
-var selectedWav: rl.Sound = undefined;
-var soundIsDone = false;
-var killApp = false;
 
-const FPS = 30;
-const framesToPass = FPS * 2;
+const FPS = 30; // FPS, barely does anything, no need for anything
+const framesToPass = FPS * 2; // Seconds to wait based on fps, so the user can glance at picture on short clips.
 
+// pngs is a hardcoded, static table of all possible Larry images to show.
 const pngs: []const [:0]const u8 = &.{
     "LpopsUp1/POP1.png",
     "LpopsUp2/POP2.png",
@@ -18,6 +16,7 @@ const pngs: []const [:0]const u8 = &.{
     "LpopsUp5/POP5.png",
 };
 
+// wavs is a hardcoded, static table of all possible sound bites to play.
 // Yes, a big fucken static list, get over it...this is a desktop toy.
 const wavs: []const [:0]const u8 = &.{
     "LpopsUp1/L001.WAV",
@@ -130,6 +129,9 @@ const wavs: []const [:0]const u8 = &.{
     "LpopsUp5/L134.WAV",
 };
 
+var selectedWav: rl.Sound = undefined;
+var soundIsDone = false;
+var killApp = false;
 var pngTexture: rl.Texture = undefined;
 
 pub fn main() !void {
@@ -142,6 +144,8 @@ pub fn main() !void {
     rl.initAudioDevice();
     defer rl.closeAudioDevice();
     rl.setTargetFPS(FPS);
+
+    rl.setWindowPosition(0, 0);
 
     const larryChosenResources = try choosePngAndWav();
     std.debug.print("Larry Chosen Set: png:{d} wav:{d}\n", .{ larryChosenResources[0], larryChosenResources[1] });
@@ -173,6 +177,15 @@ fn choosePngAndWav() !struct { usize, usize } {
     const randPng = rand.intRangeAtMost(usize, 0, pngs.len);
     const randWav = rand.intRangeAtMost(usize, 0, wavs.len);
     return .{ randPng, randWav };
+}
+
+pub fn center_window(width: u32, height: u32) void {
+    const w = @as(c_int, @intCast(width));
+    const h = @as(c_int, @intCast(height));
+    const mon = rl.getCurrentMonitor();
+    const mon_width = rl.getMonitorWidth(mon);
+    const mon_height = rl.getMonitorHeight(mon);
+    rl.setWindowPosition(@divTrunc(mon_width, 2) - @divTrunc(w, 2), @divTrunc(mon_height, 2) - @divTrunc(h, 2));
 }
 
 var hangTime: i32 = 0;
