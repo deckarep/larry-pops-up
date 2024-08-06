@@ -34,4 +34,4 @@ Original version by: Don Munsil - [further details on Al Lowe's website](https:/
 
 # Disclaimer
 
-This is just a fan-made resurrection of an old simple desktop toy originally created by Sierra On-Line, Al Lowe and Don Munsil. The original version was a Windows-only desktop widget.
+This is just a fan-made resurrection of an old simple desktop toy originally created by Sierra On-Line, [Al Lowe](https://allowe.com) and Don Munsil. Larry's voice by: [Jan Rabson](https://en.wikipedia.org/wiki/Jan_Rabson). The original version was a Windows-only desktop widget.
