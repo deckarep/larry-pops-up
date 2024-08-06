@@ -1,5 +1,5 @@
 # Larry Pops Up!
-[Larry Pops Up!](https://en.wikipedia.org/wiki/Leisure_Suit_Larry) is a modern recreation of a small desktop widget/toy originally created in 1996 to promote Leisure Suit Larry 7: Love for Sail. Now available for MacOS, Windows and Linux desktops!
+[Larry Pops Up!](https://en.wikipedia.org/wiki/Leisure_Suit_Larry) is a modern re-creation of a small desktop widget/toy originally created in 1996 to promote Leisure Suit Larry 7: Love for Sail. Now available for MacOS, Windows and Linux desktops!
 
 This desktop widget is comprised of *all* add-on packs that were ever released: 1 through 5.
 
