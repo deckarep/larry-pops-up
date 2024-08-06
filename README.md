@@ -9,7 +9,7 @@ Made with ♥️ - Please enjoy!
 #
 
 # Further Details
-Larry Pops Up! is more of just a fun desktop widget gag. The original version runs in the background as idle and waits for a period of inactivity. After some timeout, Larry pops on the screen in a very small 125x125 window and some random audio wav file plays where he says something funny to you the desktop user. Then the app simply disappears but goes back to an idle, invisible state awaiting for another timeout of inactivity. The user was able to drop in any additional WAV audio files into the widgets directory to allow any audio file sample to play. This new version does not yet do all of that and currently only plays a list of hardcoded audio samples that originally shipped with the game and includes all add-on packs. For now, this version will also just run and play on some random interval that can be scheduled/configured by the user.
+Larry Pops Up! is more of just a fun desktop widget gag. The original version runs in the background as idle and waits for a period of inactivity. After some timeout, Larry pops on the screen in a very small 125x125 window and some random audio wav file plays where he says something funny; to you, the desktop user. Then the app simply disappears but goes back to an idle, invisible state awaiting for another timeout of inactivity. The user was able to drop in any additional WAV audio files into the widgets directory to allow any audio file sample to play. This new version does not yet do all of that and currently only plays a list of hardcoded audio samples that originally shipped with the game but also includes all add-on packs. For now, this version will also just run and play on some random interval that can be scheduled/configured by the user.
 
 #
 
