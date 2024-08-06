@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{matrix.os}}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+
+      - uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: 0.13.0
+
+      # - name: Setup Python
+      #   uses: actions/setup-python@v4
+      #   with:
+      #     python-version: '3.11'
+      #     cache: pip
+
+      # - name: Install python dependencies
+      #   working-directory: test/wasi/wasi-testsuite/test-runner
+      #   run: python3 -m pip install -r requirements.txt
+
+      # Ideally we would use this but it seems to be broken
+      # - name: Setup wasm-tools
+      #   uses: jcbhmr/setup-wasm-tools@v2
+      #   with:
+      #     wasm-tools-version: 1.207
+
+      # - name: Setup wasm-tools
+      #   run: cargo install wasm-tools
+
+      - name: Build
+        run: |
+          zig build
+
+      # - name: Run unit tests
+      #   run: |
+      #     zig build test-unit
+      #     zig build -Dmeter=true test-unit
+
+      # - name: Run wasm testsuite
+      #   run: |
+      #     zig build test-wasm -- --log-suite
+
+      # - name: Run mem64 test
+      #   run: |
+      #     zig build test-mem64
+
+      # - name: Run wasi testsuite
+      #   run: |
+      #     zig build test-wasi
