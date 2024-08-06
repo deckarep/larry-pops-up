@@ -25,7 +25,7 @@
     .dependencies = .{
         .@"raylib-zig" = .{
             .url = "https://github.com/Not-Nik/raylib-zig/archive/devel.tar.gz",
-            .hash = "122007740243696aa1e91f18ee6601046b367af4e19ee031b18e79f10b1dd432e2c2", // put the actual hash here
+            .hash = "1220ff1a9e774784fe3f11ffe71bc0186f9e62eb0fe1727f676d038b62665a5c74c5", // put the actual hash here
         },
         // See `zig fetch --save <url>` for a command-line interface for adding dependencies.
         //.example = .{
