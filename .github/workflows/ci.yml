@@ -7,6 +7,12 @@ on:
   pull_request:
 
 jobs:
+  lint:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: goto-bus-stop/setup-zig@v2
+      - run: zig fmt --check .
   tests:
     strategy:
       fail-fast: false
