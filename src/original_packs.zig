@@ -14,7 +14,7 @@ pub const originalPngs = [_][]const u8{
 
 // originalWavs is a hardcoded, static table of all possible sound bites to play.
 // Yes, a big fucken static list, get over it...this is a desktop toy.
-pub const originalWavs = [_][]const u8 {
+pub const originalWavs = [_][]const u8{
     @embedFile("embeded/LpopsUp1/L001.WAV"),
     @embedFile("embeded/LpopsUp1/L005.WAV"),
     @embedFile("embeded/LpopsUp1/L007.WAV"),
@@ -124,5 +124,3 @@ pub const originalWavs = [_][]const u8 {
     @embedFile("embeded/LpopsUp5/L117.WAV"),
     @embedFile("embeded/LpopsUp5/L134.WAV"),
 };
-
-
