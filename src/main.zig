@@ -5,11 +5,11 @@ const SCREEN_WIDTH = 125;
 const SCREEN_HEIGHT = 125;
 
 const FPS = 30; // FPS, barely does anything, no need to tax user's system.
-const framesToPass = FPS * 2; // Seconds to wait based on fps, so the user has a chance to see the image before it goes away.
+const framesToPass = FPS >> 1; // Seconds to wait based on fps, so the user has a chance to see the image before it goes away.
 
 // pngs is a hardcoded, static table of all possible Larry images to show.
 // perhaps more will be added...why the hell not?
-const pngs: []const [:0]const u8 = &.{
+const pngs = [_][]const u8{
     "LpopsUp1/POP1.png",
     "LpopsUp2/POP2.png",
     "LpopsUp3/POP3.png",
@@ -19,7 +19,7 @@ const pngs: []const [:0]const u8 = &.{
 
 // wavs is a hardcoded, static table of all possible sound bites to play.
 // Yes, a big fucken static list, get over it...this is a desktop toy.
-const wavs: []const [:0]const u8 = &.{
+const wavs = [_][]const u8{
     "LpopsUp1/L001.WAV",
     "LpopsUp1/L005.WAV",
     "LpopsUp1/L007.WAV",
@@ -130,10 +130,10 @@ const wavs: []const [:0]const u8 = &.{
     "LpopsUp5/L134.WAV",
 };
 
+var pngTexture: rl.Texture = undefined;
 var selectedWav: rl.Sound = undefined;
 var soundIsDone = false;
 var killApp = false;
-var pngTexture: rl.Texture = undefined;
 
 pub fn main() !void {
     std.log.info("Larry Pops Up! by @deckarep - 2024\n", .{});
@@ -149,17 +149,21 @@ pub fn main() !void {
     rl.setWindowPosition(0, 0);
 
     const larryChosenResources = try choosePngAndWav();
-    std.debug.print("Larry Chosen Set: png:{d} wav:{d}\n", .{ larryChosenResources[0], larryChosenResources[1] });
+    std.debug.print(
+        "Larry Chosen Set: png:{d} wav:{d}\n",
+        .{ larryChosenResources.pngIdx, larryChosenResources.wavIdx },
+    );
 
-    const selectedPng: [:0]const u8 = pngs[larryChosenResources[0]];
+    var buf: [100]u8 = undefined;
+    const selectedPng = try std.fmt.bufPrintZ(buf[0..], "{s}", .{pngs[larryChosenResources.pngIdx]});
+    std.debug.print("selectedPng: {s}\n", .{selectedPng});
     pngTexture = rl.loadTexture(selectedPng);
     defer rl.unloadTexture(pngTexture);
 
-    const selectedWavFile = wavs[larryChosenResources[1]];
+    const selectedWavFile = try std.fmt.bufPrintZ(buf[0..], "{s}", .{wavs[larryChosenResources.wavIdx]});
+    std.debug.print("selectedWavFile: {s}\n", .{selectedWavFile});
     selectedWav = rl.loadSound(selectedWavFile);
     defer rl.unloadSound(selectedWav);
-
-    rl.playSound(selectedWav);
 
     while (!killApp and !rl.windowShouldClose()) {
         try update();
@@ -167,7 +171,12 @@ pub fn main() !void {
     }
 }
 
-fn choosePngAndWav() !struct { usize, usize } {
+const tuple = struct {
+    pngIdx: usize,
+    wavIdx: usize,
+};
+
+fn choosePngAndWav() !tuple {
     var prng = std.rand.DefaultPrng.init(blk: {
         var seed: u64 = undefined;
         try std.posix.getrandom(std.mem.asBytes(&seed));
@@ -175,9 +184,10 @@ fn choosePngAndWav() !struct { usize, usize } {
     });
     const rand = prng.random();
 
-    const randPng = rand.intRangeAtMost(usize, 0, pngs.len);
-    const randWav = rand.intRangeAtMost(usize, 0, wavs.len);
-    return .{ randPng, randWav };
+    const randPng = rand.intRangeAtMost(usize, 0, pngs.len - 1);
+    const randWav = rand.intRangeAtMost(usize, 0, wavs.len - 1);
+
+    return tuple{ .pngIdx = randPng, .wavIdx = randWav };
 }
 
 pub fn center_window(width: u32, height: u32) void {
@@ -190,7 +200,13 @@ pub fn center_window(width: u32, height: u32) void {
 }
 
 var hangTime: i32 = 0;
+var soundPlayCount: i32 = 0;
 fn update() !void {
+    if (soundPlayCount == 0 and !rl.isSoundPlaying(selectedWav) and rl.isSoundReady(selectedWav)) {
+        rl.playSound(selectedWav);
+        soundPlayCount = 1;
+    }
+
     if (!rl.isSoundPlaying(selectedWav)) {
         soundIsDone = true;
         hangTime += 1;
