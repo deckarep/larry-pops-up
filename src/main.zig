@@ -9,7 +9,7 @@ const framesToPass = FPS >> 1; // Seconds to wait based on fps, so the user has 
 
 // pngs is a hardcoded, static table of all possible Larry images to show.
 // perhaps more will be added...why the hell not?
-const pngs = [_][]const u8{
+const pngs = [_][*:0]const u8{
     "LpopsUp1/POP1.png",
     "LpopsUp2/POP2.png",
     "LpopsUp3/POP3.png",
@@ -19,7 +19,7 @@ const pngs = [_][]const u8{
 
 // wavs is a hardcoded, static table of all possible sound bites to play.
 // Yes, a big fucken static list, get over it...this is a desktop toy.
-const wavs = [_][]const u8{
+const wavs = [_][*:0]const u8{
     "LpopsUp1/L001.WAV",
     "LpopsUp1/L005.WAV",
     "LpopsUp1/L007.WAV",
@@ -154,13 +154,11 @@ pub fn main() !void {
         .{ larryChosenResources.pngIdx, larryChosenResources.wavIdx },
     );
 
-    var buf: [100]u8 = undefined;
-    const selectedPng = try std.fmt.bufPrintZ(buf[0..], "{s}", .{pngs[larryChosenResources.pngIdx]});
-    std.debug.print("selectedPng: {s}\n", .{selectedPng});
+    const selectedPng = pngs[larryChosenResources.pngIdx];
     pngTexture = rl.loadTexture(selectedPng);
     defer rl.unloadTexture(pngTexture);
 
-    const selectedWavFile = try std.fmt.bufPrintZ(buf[0..], "{s}", .{wavs[larryChosenResources.wavIdx]});
+    const selectedWavFile = wavs[larryChosenResources.wavIdx];
     std.debug.print("selectedWavFile: {s}\n", .{selectedWavFile});
     selectedWav = rl.loadSound(selectedWavFile);
     defer rl.unloadSound(selectedWav);
@@ -171,12 +169,12 @@ pub fn main() !void {
     }
 }
 
-const tuple = struct {
+const selectedIndices = struct {
     pngIdx: usize,
     wavIdx: usize,
 };
 
-fn choosePngAndWav() !tuple {
+fn choosePngAndWav() !selectedIndices {
     var prng = std.rand.DefaultPrng.init(blk: {
         var seed: u64 = undefined;
         try std.posix.getrandom(std.mem.asBytes(&seed));
@@ -187,7 +185,7 @@ fn choosePngAndWav() !tuple {
     const randPng = rand.intRangeAtMost(usize, 0, pngs.len - 1);
     const randWav = rand.intRangeAtMost(usize, 0, wavs.len - 1);
 
-    return tuple{ .pngIdx = randPng, .wavIdx = randWav };
+    return selectedIndices{ .pngIdx = randPng, .wavIdx = randWav };
 }
 
 pub fn center_window(width: u32, height: u32) void {
