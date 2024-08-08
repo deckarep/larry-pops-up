@@ -20,21 +20,21 @@ If you enjoy this project or have ever enjoyed any of Al Lowe's work in the past
 Original version by: Don Munsil - [further details on Al Lowe's website](https://allowe.com/games/larry/even-more-larry/larry-links.html)
 
 
-![Larry1](LpopsUp1/POP1.png?raw=true "Larry1")
+![Larry1](src/embeded/LpopsUp1/POP1.png?raw=true "Larry1")
 
 #
-![Larry2](LpopsUp2/POP2.png?raw=true "Larry2")
+![Larry2](src/embeded/LpopsUp2/POP2.png?raw=true "Larry2")
 
 #
-![Larry3](LpopsUp3/POP3.png?raw=true "Larry3")
-
-#
-
-![Larry4](LpopsUp4/POP4.png?raw=true "Larry1")
+![Larry3](src/embeded/LpopsUp3/POP3.png?raw=true "Larry3")
 
 #
 
-![Larry5](LpopsUp5/POP5.png?raw=true "Larry1")
+![Larry4](src/embeded/LpopsUp4/POP4.png?raw=true "Larry1")
+
+#
+
+![Larry5](src/embeded/LpopsUp5/POP5.png?raw=true "Larry1")
 
 # Disclaimer
 
