@@ -20,9 +20,6 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
-        // R.C.: Not sure if these are going to work for me on this project. Remove if it causes bugs!
-        .use_lld = false,
-        .use_llvm = false,
     });
 
     const raylib_dep = b.dependency("raylib-zig", .{
@@ -34,6 +31,7 @@ pub fn build(b: *std.Build) void {
     const raygui = raylib_dep.module("raygui"); // raygui module
     const raylib_artifact = raylib_dep.artifact("raylib"); // raylib C library
 
+    exe.linkLibC();
     exe.linkLibrary(raylib_artifact);
     exe.root_module.addImport("raylib", raylib);
     exe.root_module.addImport("raygui", raygui);
