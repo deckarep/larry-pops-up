@@ -13,9 +13,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest, windows-latest] #ubuntu-latest]
+        platform: [macos-latest] #windows-latest, ubuntu-latest]
+        target: [x86_64-macos]
     runs-on: ${{ matrix.platform }}
-
     steps:
       - uses: actions/checkout@v2
         with:
@@ -28,4 +28,10 @@ jobs:
 
       - name: Compile executable
         run: |
-          zig build install
+          zig build -Dtarget=${{ matrix.target}}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LARPOP-${{ matrix.target }}
+          path: zig-out/bin/
