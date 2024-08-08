@@ -31,10 +31,17 @@ pub fn build(b: *std.Build) void {
     const raygui = raylib_dep.module("raygui"); // raygui module
     const raylib_artifact = raylib_dep.artifact("raylib"); // raylib C library
 
-    exe.linkLibC();
-    exe.linkLibrary(raylib_artifact);
     exe.root_module.addImport("raylib", raylib);
     exe.root_module.addImport("raygui", raygui);
+
+    exe.linkFramework("CoreVideo");
+    exe.linkFramework("IOKit");
+    exe.linkFramework("Cocoa");
+    exe.linkFramework("GLUT");
+    exe.linkFramework("OpenGL");
+
+    exe.linkLibC();
+    exe.linkLibrary(raylib_artifact);
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default
