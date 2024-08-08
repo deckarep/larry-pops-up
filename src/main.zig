@@ -14,7 +14,7 @@ var soundIsDone = false;
 var killApp = false;
 
 pub fn main() !void {
-    std.log.info("Larry Pops Up! - (@deckarep - 2024)\n", .{});
+    std.log.info("Larry Pops Up! - (@deckarep -  2024)\n", .{});
     rl.initWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Larry Pops Up!");
     rl.setWindowMaxSize(SCREEN_WIDTH, SCREEN_HEIGHT);
     //rl.toggleBorderlessWindowed(); // - doesn't seem to work on macos.
