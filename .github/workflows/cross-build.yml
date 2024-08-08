@@ -28,7 +28,7 @@ jobs:
 
       - name: Compile executable
         run: |
-          zig build install
+          zig build
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
