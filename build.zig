@@ -34,11 +34,13 @@ pub fn build(b: *std.Build) void {
     exe.root_module.addImport("raylib", raylib);
     exe.root_module.addImport("raygui", raygui);
 
-    exe.linkFramework("CoreVideo");
-    exe.linkFramework("IOKit");
-    exe.linkFramework("Cocoa");
-    exe.linkFramework("GLUT");
-    exe.linkFramework("OpenGL");
+    // We don't need these defined here and it will break Windows builds anyway.
+    // The link is already taking care of via the Raylib build scripts from the .zon import.
+    // exe.linkFramework("CoreVideo");
+    // exe.linkFramework("IOKit");
+    // exe.linkFramework("Cocoa");
+    // exe.linkFramework("GLUT");
+    // exe.linkFramework("OpenGL");
 
     exe.linkLibC();
     exe.linkLibrary(raylib_artifact);
