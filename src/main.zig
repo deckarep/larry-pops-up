@@ -1,5 +1,6 @@
 const std = @import("std");
 const ogPack = @import("original_packs.zig");
+const lsl6Pack = @import("lsl6_packs.zig");
 const rl = @import("raylib");
 
 const SCREEN_WIDTH = 125;
@@ -32,8 +33,12 @@ pub fn main() !void {
         .{ larryChosenResources.pngIdx, larryChosenResources.wavIdx },
     );
 
-    const selectedPng = ogPack.originalPngs[larryChosenResources.pngIdx];
+    const allPngs = ogPack.originalPngs ++ lsl6Pack.lsl6Pngs;
+
+    const selectedPng = allPngs[larryChosenResources.pngIdx];
     const img = rl.loadImageFromMemory(".png", selectedPng);
+    // Match the window size to the selected image file dimensions.
+    rl.setWindowSize(img.width, img.height);
     pngTexture = rl.loadTextureFromImage(img);
     defer rl.unloadTexture(pngTexture);
 
@@ -61,7 +66,8 @@ fn choosePngAndWav() !selectedIndices {
     });
     const rand = prng.random();
 
-    const randPng = rand.intRangeAtMost(usize, 0, ogPack.originalPngs.len - 1);
+    const allPngCounts = ogPack.originalPngs.len - 1 + lsl6Pack.lsl6Pngs.len - 1;
+    const randPng = rand.intRangeAtMost(usize, 0, allPngCounts);
     const randWav = rand.intRangeAtMost(usize, 0, ogPack.originalWavs.len - 1);
 
     return selectedIndices{ .pngIdx = randPng, .wavIdx = randWav };
