@@ -13,6 +13,7 @@ var pngTexture: rl.Texture = undefined;
 var selectedWav: rl.Sound = undefined;
 var soundIsDone = false;
 var killApp = false;
+var scaleFactor: c_int = 1;
 
 pub fn main() !void {
     std.log.info("Larry Pops Up! - (@deckarep -  2024)\n", .{});
@@ -37,8 +38,13 @@ pub fn main() !void {
 
     const selectedPng = allPngs[larryChosenResources.pngIdx];
     const img = rl.loadImageFromMemory(".png", selectedPng);
+    if (larryChosenResources.pngIdx > 4) {
+        // Hack: the lsl6 are scaled up by 2.
+        scaleFactor = 2;
+    }
+
     // Match the window size to the selected image file dimensions.
-    rl.setWindowSize(img.width, img.height);
+    rl.setWindowSize(img.width * scaleFactor, img.height * scaleFactor);
     pngTexture = rl.loadTextureFromImage(img);
     defer rl.unloadTexture(pngTexture);
 
@@ -105,5 +111,14 @@ fn draw() !void {
     defer rl.endDrawing();
 
     rl.clearBackground(rl.Color.pink);
-    rl.drawTexture(pngTexture, 0, 0, rl.Color.white);
+
+    // Some assets might be scaled, so we use the more complicated from for teture drawing.
+    const tw: f32 = @floatFromInt(pngTexture.width);
+    const th: f32 = @floatFromInt(pngTexture.height);
+    const sf: f32 = @floatFromInt(scaleFactor);
+    const src = rl.Rectangle.init(0, 0, tw, th);
+    const dst = rl.Rectangle.init(0, 0, tw * sf, th * sf);
+    const org = rl.Vector2.init(0, 0);
+
+    rl.drawTexturePro(pngTexture, src, dst, org, 0, rl.Color.white);
 }
