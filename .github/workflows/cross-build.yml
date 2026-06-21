@@ -28,7 +28,7 @@ jobs:
 
       - name: Compile executable
         run: |
-          zig build
+          zig build -Doptimize=ReleaseSmall
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
