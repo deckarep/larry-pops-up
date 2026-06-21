@@ -35,8 +35,11 @@ const ALT_SCREEN_HEIGHT = 96 * 2;
 const FPS = 30; // FPS, barely does anything, no need to tax user's system.
 const framesToPass = FPS >> 1; // Seconds to wait based on fps, so the user has a chance to see the image before it goes away.
 
-var pngTexture: rl.Texture = undefined;
-var selectedWav: rl.Sound = undefined;
+const selectedIndices = struct {
+    pngIdx: usize,
+    wavIdx: usize,
+};
+
 var soundIsDone = false;
 var killApp = false;
 var scaleFactor: f32 = 1;
@@ -85,24 +88,24 @@ pub fn main(init: std.process.Init) !void {
         scaleFactor = 2.0;
     }
 
-    pngTexture = try rl.loadTextureFromImage(img);
+    const pngTexture = try rl.loadTextureFromImage(img);
     defer rl.unloadTexture(pngTexture);
 
     const selectedWavFile = ogPack.originalWavs[larryChosenResources.wavIdx];
     const memWav = try rl.loadWaveFromMemory(".wav", selectedWavFile);
-    selectedWav = rl.loadSoundFromWave(memWav);
+    defer rl.unloadWave(memWav);
+    const selectedWav = rl.loadSoundFromWave(memWav);
     defer rl.unloadSound(selectedWav);
 
-    while (!killApp and !rl.windowShouldClose()) {
-        try update();
-        try draw();
-    }
+    try play(&selectedWav, &pngTexture);
 }
 
-const selectedIndices = struct {
-    pngIdx: usize,
-    wavIdx: usize,
-};
+fn play(sound: *const rl.Sound, texture: *const rl.Texture) !void {
+    while (!killApp and !rl.windowShouldClose()) {
+        try update(sound);
+        try draw(texture);
+    }
+}
 
 fn choosePngAndWav(io: std.Io) !selectedIndices {
     var prng = std.Random.DefaultPrng.init(blk: {
@@ -130,13 +133,13 @@ fn choosePngAndWav(io: std.Io) !selectedIndices {
 
 var hangTime: i32 = 0;
 var soundPlayCount: i32 = 0;
-fn update() !void {
-    if (soundPlayCount == 0 and !rl.isSoundPlaying(selectedWav) and rl.isSoundValid(selectedWav)) {
-        rl.playSound(selectedWav);
+fn update(snd: *const rl.Sound) !void {
+    if (soundPlayCount == 0 and !rl.isSoundPlaying(snd.*) and rl.isSoundValid(snd.*)) {
+        rl.playSound(snd.*);
         soundPlayCount = 1;
     }
 
-    if (!rl.isSoundPlaying(selectedWav)) {
+    if (!rl.isSoundPlaying(snd.*)) {
         soundIsDone = true;
         hangTime += 1;
     }
@@ -146,19 +149,19 @@ fn update() !void {
     }
 }
 
-fn draw() !void {
+fn draw(txtr: *const rl.Texture) !void {
     rl.beginDrawing();
     defer rl.endDrawing();
 
     rl.clearBackground(rl.Color.pink);
 
     // Some assets might be scaled, so we use the more complicated from for teture drawing.
-    const tw: f32 = @floatFromInt(pngTexture.width);
-    const th: f32 = @floatFromInt(pngTexture.height);
+    const tw: f32 = @floatFromInt(txtr.width);
+    const th: f32 = @floatFromInt(txtr.height);
     const sf: f32 = scaleFactor;
     const src = rl.Rectangle.init(0, 0, tw, th);
     const dst = rl.Rectangle.init(0, 0, tw * sf, th * sf);
     const org = rl.Vector2.init(0, 0);
 
-    rl.drawTexturePro(pngTexture, src, dst, org, 0, rl.Color.white);
+    rl.drawTexturePro(txtr.*, src, dst, org, 0, rl.Color.white);
 }
