@@ -56,8 +56,9 @@ pub fn main(init: std.process.Init) !void {
     rl.setWindowPosition(0, 0);
 
     const img = try rl.loadImageFromMemory(".PNG", selectedPng);
+    defer rl.unloadImage(img);
     if (larryChosenResources.pngIdx > 4) {
-        // Hack: the lsl6 are scaled up by 2.
+        // Hack: the lsl6 portraits are scaled up by 2.
         scaleFactor = 2.0;
     }
 
