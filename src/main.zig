@@ -15,7 +15,8 @@ var soundIsDone = false;
 var killApp = false;
 var scaleFactor: c_int = 1;
 
-pub fn main() !void {
+pub fn main(init: std.process.Init) !void {
+    const io = init.io;
     std.log.info("Larry Pops Up! - (@deckarep -  2024)\n", .{});
     rl.initWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Larry Pops Up!");
     rl.setWindowMaxSize(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -28,7 +29,7 @@ pub fn main() !void {
 
     rl.setWindowPosition(0, 0);
 
-    const larryChosenResources = try choosePngAndWav();
+    const larryChosenResources = try choosePngAndWav(io);
     std.debug.print(
         "Larry Chosen Set: png: {d} wav: {d}\n",
         .{ larryChosenResources.pngIdx, larryChosenResources.wavIdx },
@@ -37,7 +38,7 @@ pub fn main() !void {
     const allPngs = ogPack.originalPngs ++ lsl6Pack.lsl6Pngs;
 
     const selectedPng = allPngs[larryChosenResources.pngIdx];
-    const img = rl.loadImageFromMemory(".png", selectedPng);
+    const img = try rl.loadImageFromMemory(".png", selectedPng);
     if (larryChosenResources.pngIdx > 4) {
         // Hack: the lsl6 are scaled up by 2.
         scaleFactor = 2;
@@ -45,11 +46,11 @@ pub fn main() !void {
 
     // Match the window size to the selected image file dimensions.
     rl.setWindowSize(img.width * scaleFactor, img.height * scaleFactor);
-    pngTexture = rl.loadTextureFromImage(img);
+    pngTexture = try rl.loadTextureFromImage(img);
     defer rl.unloadTexture(pngTexture);
 
     const selectedWavFile = ogPack.originalWavs[larryChosenResources.wavIdx];
-    const memWav = rl.loadWaveFromMemory(".wav", selectedWavFile);
+    const memWav = try rl.loadWaveFromMemory(".wav", selectedWavFile);
     selectedWav = rl.loadSoundFromWave(memWav);
     defer rl.unloadSound(selectedWav);
 
@@ -64,10 +65,10 @@ const selectedIndices = struct {
     wavIdx: usize,
 };
 
-fn choosePngAndWav() !selectedIndices {
-    var prng = std.rand.DefaultPrng.init(blk: {
+fn choosePngAndWav(io: std.Io) !selectedIndices {
+    var prng = std.Random.DefaultPrng.init(blk: {
         var seed: u64 = undefined;
-        try std.posix.getrandom(std.mem.asBytes(&seed));
+        io.random(std.mem.asBytes(&seed));
         break :blk seed;
     });
     const rand = prng.random();
@@ -91,7 +92,7 @@ pub fn center_window(width: u32, height: u32) void {
 var hangTime: i32 = 0;
 var soundPlayCount: i32 = 0;
 fn update() !void {
-    if (soundPlayCount == 0 and !rl.isSoundPlaying(selectedWav) and rl.isSoundReady(selectedWav)) {
+    if (soundPlayCount == 0 and !rl.isSoundPlaying(selectedWav) and rl.isSoundValid(selectedWav)) {
         rl.playSound(selectedWav);
         soundPlayCount = 1;
     }
