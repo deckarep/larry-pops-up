@@ -44,3 +44,32 @@ jobs:
         with:
           name: LARPOP-${{ matrix.artifact }}
           path: zig-out/bin/
+
+  publish-release:
+    needs: cross-build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+
+      - name: Zip each platform's build
+        run: |
+          cd release-assets
+          for dir in */; do
+            name="${dir%/}"
+            zip -r "../${name}.zip" "$dir"
+          done
+
+      - name: Publish nightly release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: nightly
+          name: "Nightly Build"
+          prerelease: true
+          make_latest: false
+          files: "*.zip"
