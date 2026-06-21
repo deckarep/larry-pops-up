@@ -21,6 +21,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+// NOTE: Converted all .WAV to a more friendler compressed variable rate format with:
+// for file in *.WAV; do ffmpeg -y -i "$file" -c:a libvorbis -qscale:a 1 "${file%.WAV}.ogg"; done
+// Must use libvorbis as libopus doesn't work with Raylib.
+
 const std = @import("std");
 const ogPack = @import("original_packs.zig");
 const lsl6Pack = @import("lsl6_packs.zig");
@@ -81,7 +85,7 @@ pub fn main(init: std.process.Init) !void {
     rl.setTargetFPS(FPS);
     rl.setWindowPosition(0, 0);
 
-    const img = try rl.loadImageFromMemory(".PNG", selectedPng);
+    const img = try rl.loadImageFromMemory(".png", selectedPng);
     defer rl.unloadImage(img);
     if (larryChosenResources.pngIdx > 4) {
         // Hack: the lsl6 portraits are scaled up by 2.
@@ -92,7 +96,7 @@ pub fn main(init: std.process.Init) !void {
     defer rl.unloadTexture(pngTexture);
 
     const selectedWavFile = ogPack.originalWavs[larryChosenResources.wavIdx];
-    const memWav = try rl.loadWaveFromMemory(".wav", selectedWavFile);
+    const memWav = try rl.loadWaveFromMemory(".ogg", selectedWavFile);
     defer rl.unloadWave(memWav);
     const selectedWav = rl.loadSoundFromWave(memWav);
     defer rl.unloadSound(selectedWav);
