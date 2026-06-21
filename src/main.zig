@@ -6,6 +6,9 @@ const rl = @import("raylib");
 const SCREEN_WIDTH = 125;
 const SCREEN_HEIGHT = 125;
 
+const ALT_SCREEN_WIDTH = 71 * 2;
+const ALT_SCREEN_HEIGHT = 96 * 2;
+
 const FPS = 30; // FPS, barely does anything, no need to tax user's system.
 const framesToPass = FPS >> 1; // Seconds to wait based on fps, so the user has a chance to see the image before it goes away.
 
@@ -13,21 +16,11 @@ var pngTexture: rl.Texture = undefined;
 var selectedWav: rl.Sound = undefined;
 var soundIsDone = false;
 var killApp = false;
-var scaleFactor: c_int = 1;
+var scaleFactor: f32 = 1;
 
 pub fn main(init: std.process.Init) !void {
     const io = init.io;
-    std.log.info("Larry Pops Up! - (@deckarep -  2024)\n", .{});
-    rl.initWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Larry Pops Up!");
-    rl.setWindowMaxSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-    //rl.toggleBorderlessWindowed(); // - doesn't seem to work on macos.
-    rl.setWindowFocused();
-    defer rl.closeWindow();
-    rl.initAudioDevice();
-    defer rl.closeAudioDevice();
-    rl.setTargetFPS(FPS);
-
-    rl.setWindowPosition(0, 0);
+    std.log.info("Larry Pops Up! - (@deckarep -  2026)\n", .{});
 
     const larryChosenResources = try choosePngAndWav(io);
     std.debug.print(
@@ -38,14 +31,36 @@ pub fn main(init: std.process.Init) !void {
     const allPngs = ogPack.originalPngs ++ lsl6Pack.lsl6Pngs;
 
     const selectedPng = allPngs[larryChosenResources.pngIdx];
-    const img = try rl.loadImageFromMemory(".png", selectedPng);
+
+    var sw: i32 = SCREEN_WIDTH;
+    var sh: i32 = SCREEN_HEIGHT;
     if (larryChosenResources.pngIdx > 4) {
-        // Hack: the lsl6 are scaled up by 2.
-        scaleFactor = 2;
+        // hack to set window for newer Larry portraits (beyond the original implementation)
+        sw = ALT_SCREEN_WIDTH;
+        sh = ALT_SCREEN_HEIGHT;
     }
 
-    // Match the window size to the selected image file dimensions.
-    rl.setWindowSize(img.width * scaleFactor, img.height * scaleFactor);
+    rl.setConfigFlags(.{
+        .borderless_windowed_mode = true,
+        .window_undecorated = true,
+        .window_topmost = true,
+        .window_resizable = false,
+    });
+    rl.initWindow(sw, sh, "Larry Pops Up!");
+    rl.setWindowMaxSize(sw, sh);
+    rl.setWindowFocused();
+    defer rl.closeWindow();
+    rl.initAudioDevice();
+    defer rl.closeAudioDevice();
+    rl.setTargetFPS(FPS);
+    rl.setWindowPosition(0, 0);
+
+    const img = try rl.loadImageFromMemory(".PNG", selectedPng);
+    if (larryChosenResources.pngIdx > 4) {
+        // Hack: the lsl6 are scaled up by 2.
+        scaleFactor = 2.0;
+    }
+
     pngTexture = try rl.loadTextureFromImage(img);
     defer rl.unloadTexture(pngTexture);
 
@@ -73,21 +88,21 @@ fn choosePngAndWav(io: std.Io) !selectedIndices {
     });
     const rand = prng.random();
 
-    const allPngCounts = ogPack.originalPngs.len - 1 + lsl6Pack.lsl6Pngs.len - 1;
-    const randPng = rand.intRangeAtMost(usize, 0, allPngCounts);
+    const allPngCounts = ogPack.originalPngs.len + lsl6Pack.lsl6Pngs.len;
+    const randPng = rand.intRangeAtMost(usize, 0, allPngCounts - 1);
     const randWav = rand.intRangeAtMost(usize, 0, ogPack.originalWavs.len - 1);
 
     return selectedIndices{ .pngIdx = randPng, .wavIdx = randWav };
 }
 
-pub fn center_window(width: u32, height: u32) void {
-    const w = @as(c_int, @intCast(width));
-    const h = @as(c_int, @intCast(height));
-    const mon = rl.getCurrentMonitor();
-    const mon_width = rl.getMonitorWidth(mon);
-    const mon_height = rl.getMonitorHeight(mon);
-    rl.setWindowPosition(@divTrunc(mon_width, 2) - @divTrunc(w, 2), @divTrunc(mon_height, 2) - @divTrunc(h, 2));
-}
+// pub fn center_window(width: u32, height: u32) void {
+//     const w = @as(c_int, @intCast(width));
+//     const h = @as(c_int, @intCast(height));
+//     const mon = rl.getCurrentMonitor();
+//     const mon_width = rl.getMonitorWidth(mon);
+//     const mon_height = rl.getMonitorHeight(mon);
+//     rl.setWindowPosition(@divTrunc(mon_width, 2) - @divTrunc(w, 2), @divTrunc(mon_height, 2) - @divTrunc(h, 2));
+// }
 
 var hangTime: i32 = 0;
 var soundPlayCount: i32 = 0;
@@ -116,7 +131,7 @@ fn draw() !void {
     // Some assets might be scaled, so we use the more complicated from for teture drawing.
     const tw: f32 = @floatFromInt(pngTexture.width);
     const th: f32 = @floatFromInt(pngTexture.height);
-    const sf: f32 = @floatFromInt(scaleFactor);
+    const sf: f32 = scaleFactor;
     const src = rl.Rectangle.init(0, 0, tw, th);
     const dst = rl.Rectangle.init(0, 0, tw * sf, th * sf);
     const org = rl.Vector2.init(0, 0);
