@@ -7,6 +7,10 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
+    var threaded: std.Io.Threaded = .init(b.allocator, .{});
+    defer threaded.deinit();
+    const io = threaded.io();
+
     const raylib_dep = b.dependency("raylib_zig", .{
         .target = target,
         .optimize = optimize,
@@ -22,6 +26,15 @@ pub fn build(b: *std.Build) void {
         .link_libc = false,
     });
     exe_mod.addImport("raylib", raylib);
+
+    // NOTE: Added this nonsense to support cross compilation for both MacOS (Intel+ Apple Silicon)
+    if (target.result.os.tag == .macos) {
+        if (std.zig.system.darwin.getSdk(b.allocator, io, &target.result)) |sdk_path| {
+            exe_mod.addSystemFrameworkPath(.{ .cwd_relative = b.fmt("{s}/System/Library/Frameworks", .{sdk_path}) });
+            exe_mod.addSystemIncludePath(.{ .cwd_relative = b.fmt("{s}/usr/include", .{sdk_path}) });
+            exe_mod.addLibraryPath(.{ .cwd_relative = b.fmt("{s}/usr/lib", .{sdk_path}) });
+        }
+    }
 
     const run_step = b.step("run", "Run the app");
 

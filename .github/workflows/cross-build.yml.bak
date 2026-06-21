@@ -13,16 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - platform: macos-latest
-            target: aarch64-macos
-            artifact: macos-arm64
-          - platform: macos-latest
-            target: x86_64-macos
-            artifact: macos-x86_64
-          - platform: macos-latest #windows-latest #NOTE: trying to do windows cross-compilation on Mac as well!
-            target: x86_64-windows
-            artifact: windows-x86_64
+        platform: [macos-latest, windows-latest] #ubuntu-latest]
     runs-on: ${{ matrix.platform }}
 
     steps:
@@ -37,10 +28,10 @@ jobs:
 
       - name: Compile executable
         run: |
-          zig build -Doptimize=ReleaseSmall -Dtarget=${{ matrix.target }}
+          zig build -Doptimize=ReleaseSmall
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: LARPOP-${{ matrix.artifact }}
+          name: LARPOP-${{ matrix.platform }}
           path: zig-out/bin/
