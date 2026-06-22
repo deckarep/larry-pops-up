@@ -28,6 +28,7 @@
 const std = @import("std");
 const ogPack = @import("original_packs.zig");
 const lsl6Pack = @import("lsl6_packs.zig");
+const kq5Pack = @import("kq5_pack.zig");
 const rl = @import("raylib");
 
 const SCREEN_WIDTH = 125;
@@ -35,6 +36,12 @@ const SCREEN_HEIGHT = 125;
 
 const ALT_SCREEN_WIDTH = 71 * 2;
 const ALT_SCREEN_HEIGHT = 96 * 2;
+
+const CEDRIC_SCREEN_WIDTH = 58 * 2;
+const CEDRIC_SCREEN_HEIGHT = 43 * 2;
+
+var sw: i32 = SCREEN_WIDTH;
+var sh: i32 = SCREEN_HEIGHT;
 
 const FPS = 30; // FPS, barely does anything, no need to tax user's system.
 const framesToPass = FPS >> 1; // Seconds to wait based on fps, so the user has a chance to see the image before it goes away.
@@ -47,10 +54,12 @@ const selectedIndices = struct {
 var soundIsDone = false;
 var killApp = false;
 var scaleFactor: f32 = 1;
+var hangTime: i32 = 0;
+var soundPlayCount: i32 = 0;
 
 pub fn main(init: std.process.Init) !void {
     const io = init.io;
-    std.log.info("Larry Pops Up! - (@deckarep - 2026)\n", .{});
+    std.log.info("Larry Pops Up! - (@deckarep 2026)\n", .{});
 
     if (true) {
         reset();
@@ -69,6 +78,8 @@ fn reset() void {
     scaleFactor = 1;
     hangTime = 0;
     soundPlayCount = 0;
+    sw = SCREEN_WIDTH;
+    sh = SCREEN_HEIGHT;
 }
 
 fn doOne(io: std.Io) !void {
@@ -79,10 +90,18 @@ fn doOne(io: std.Io) !void {
     );
 
     const allPngs = ogPack.originalPngs ++ lsl6Pack.lsl6Pngs;
-    const selectedPng = allPngs[larryChosenResources.pngIdx];
+    var selectedPng = allPngs[larryChosenResources.pngIdx];
+    var selectedWavFile = ogPack.originalWavs[larryChosenResources.wavIdx];
 
-    var sw: i32 = SCREEN_WIDTH;
-    var sh: i32 = SCREEN_HEIGHT;
+    // 3% chance that cedric shows up
+    if (easterEgg(
+        io,
+        3,
+    )) {
+        selectedWavFile = kq5Pack.wavs[0];
+        selectedPng = kq5Pack.pngs[0];
+    }
+
     if (larryChosenResources.pngIdx > 4) {
         // hack to set window for newer Larry portraits (beyond the original implementation)
         sw = ALT_SCREEN_WIDTH;
@@ -114,7 +133,6 @@ fn doOne(io: std.Io) !void {
     const pngTexture = try rl.loadTextureFromImage(img);
     defer rl.unloadTexture(pngTexture);
 
-    const selectedWavFile = ogPack.originalWavs[larryChosenResources.wavIdx];
     const memWav = try rl.loadWaveFromMemory(".ogg", selectedWavFile);
     defer rl.unloadWave(memWav);
     const selectedWav = rl.loadSoundFromWave(memWav);
@@ -145,6 +163,21 @@ fn choosePngAndWav(io: std.Io) !selectedIndices {
     return selectedIndices{ .pngIdx = randPng, .wavIdx = randWav };
 }
 
+fn easterEgg(io: std.Io, chancePercent: i32) bool {
+    var seed: u32 = undefined;
+    io.random(std.mem.asBytes(&seed));
+    rl.setRandomSeed(seed);
+    const rnd = rl.getRandomValue(0, 100);
+    std.log.info("rnd => {d}\n", .{rnd});
+    if (rnd < chancePercent) {
+        scaleFactor = 2.0;
+        sw = CEDRIC_SCREEN_WIDTH;
+        sh = CEDRIC_SCREEN_HEIGHT;
+        return true;
+    }
+    return false;
+}
+
 // pub fn center_window(width: u32, height: u32) void {
 //     const w = @as(c_int, @intCast(width));
 //     const h = @as(c_int, @intCast(height));
@@ -154,8 +187,6 @@ fn choosePngAndWav(io: std.Io) !selectedIndices {
 //     rl.setWindowPosition(@divTrunc(mon_width, 2) - @divTrunc(w, 2), @divTrunc(mon_height, 2) - @divTrunc(h, 2));
 // }
 
-var hangTime: i32 = 0;
-var soundPlayCount: i32 = 0;
 fn update(snd: *const rl.Sound) !void {
     if (soundPlayCount == 0 and !rl.isSoundPlaying(snd.*) and rl.isSoundValid(snd.*)) {
         rl.playSound(snd.*);
@@ -181,9 +212,9 @@ fn draw(txtr: *const rl.Texture) !void {
     // Some assets might be scaled, so we use the more complicated from for teture drawing.
     const tw: f32 = @floatFromInt(txtr.width);
     const th: f32 = @floatFromInt(txtr.height);
-    const sf: f32 = scaleFactor;
+
     const src = rl.Rectangle.init(0, 0, tw, th);
-    const dst = rl.Rectangle.init(0, 0, tw * sf, th * sf);
+    const dst = rl.Rectangle.init(0, 0, tw * scaleFactor, th * scaleFactor);
     const org = rl.Vector2.init(0, 0);
 
     rl.drawTexturePro(txtr.*, src, dst, org, 0, rl.Color.white);
