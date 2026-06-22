@@ -52,6 +52,26 @@ pub fn main(init: std.process.Init) !void {
     const io = init.io;
     std.log.info("Larry Pops Up! - (@deckarep - 2026)\n", .{});
 
+    if (true) {
+        reset();
+        try doOne(io);
+    } else {
+        while (true) {
+            reset();
+            try doOne(io);
+        }
+    }
+}
+
+fn reset() void {
+    soundIsDone = false;
+    killApp = false;
+    scaleFactor = 1;
+    hangTime = 0;
+    soundPlayCount = 0;
+}
+
+fn doOne(io: std.Io) !void {
     const larryChosenResources = try choosePngAndWav(io);
     std.debug.print(
         "Larry Chosen Set: png: {d} wav: {d}\n",
@@ -59,7 +79,6 @@ pub fn main(init: std.process.Init) !void {
     );
 
     const allPngs = ogPack.originalPngs ++ lsl6Pack.lsl6Pngs;
-
     const selectedPng = allPngs[larryChosenResources.pngIdx];
 
     var sw: i32 = SCREEN_WIDTH;
