@@ -36,6 +36,34 @@ Original version by: Don Munsil - [further details on Al Lowe's website](https:/
 
 ![Larry5](src/embeded/LpopsUp5/POP5.png?raw=true "Larry1")
 
+# Bonus Content
+
+![Larry1](src/embeded/lsl6/larry_noshirt_smile.png?raw=true "Larry 6: Shirtless and smiling")
+
+#
+![Larry2](src/embeded/lsl6/larry_noshirt_think.png?raw=true "Larry 6: Shirtless and thinking")
+
+#
+![Larry3](src/embeded/lsl6/larry_noshirt_thumbsup.png?raw=true "Larry 6: Shirtless and thumbs upping")
+
+#
+
+![Larry4](src/embeded/lsl6/larry_suit_blush.png?raw=true "Larry 6: Suited and blushing")
+
+#
+
+![Larry5](src/embeded/lsl6/larry_suit_smile.png?raw=true "Larry 6: Suited and smiling")
+
+#
+
+![Larry5](src/embeded/lsl6/larry_suit_think.png?raw=true "Larry 6: Suited and thinking")
+
+#
+
+![Larry5](src/embeded/lsl6/larry_suit_thumbsup.png?raw=true "Larry 6: Suited and thumbs upping")
+
+
+
 # Disclaimer
 
 This is just a fan-made resurrection of an old simple desktop toy originally created by Sierra On-Line, [Al Lowe](https://allowe.com) and Don Munsil. Larry's voice by: [Jan Rabson](https://en.wikipedia.org/wiki/Jan_Rabson). The original version was a Windows-only desktop widget.
